@@ -4,15 +4,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WebRTC Video Call</title>
+    <title>WebRTC Video Call with Chat</title>
 </head>
 <body>
     <h1>Video Call</h1>
     <!-- Bouton pour démarrer/arrêter la vidéo -->
     <button id="startStopButton">Start Video</button>
 
-    <video id="localVideo" autoplay playsinline muted></video>
-    <video id="remoteVideo" autoplay playsinline></video>
+    <div id="videoContainer">
+        <video id="localVideo" autoplay playsinline muted></video>
+        <video id="remoteVideo" autoplay playsinline></video>
+    </div>
+
+    <div id="chatContainer">
+        <div id="messages" style="border: 1px solid #ccc; height: 200px; overflow-y: auto; margin-bottom: 10px; padding: 10px;"></div>
+        <form id="chatForm">
+            <input type="text" id="chatInput" placeholder="Type a message..." style="width: 80%;" />
+            <button type="submit" style="width: 18%;">Send</button>
+        </form>
+    </div>
+
     <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
     <script src="/static/main.js"></script>
 </body>

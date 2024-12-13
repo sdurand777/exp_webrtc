@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Video to peer connection</title>
+</head>
+<body>
+<div id="container">
+    <h1>
+        <span>Stream show local video</span>
+    </h1>
+    <video id="localVideo" playsinline controls muted>
+        <source src="/static/video.mp4" type="video/mp4"/>
+        <p>This browser does not support the video element.</p>
+    </video>
+</div>
+<script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+<script src="/static/local.js" async></script>
+</body>
+</html>
