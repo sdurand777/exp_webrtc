@@ -8,6 +8,9 @@ let stream;
 // la connection pour streamer la video
 let pcLocal;
 
+// Délai avant l'envoi de l'offre SDP (en millisecondes)
+const SDP_SEND_DELAY = 10000; // 1 seconde
+
 // create stream from local video
 function maybeCreateStream() {
     if (stream) {
@@ -30,8 +33,15 @@ function maybeCreateStream() {
         console.log('captureStream() not supported');
     }
 
-    // Créer l'instance de RTCPeerConnection
-    pcLocal = new RTCPeerConnection();
+    // // Créer l'instance de RTCPeerConnection
+    // pcLocal = new RTCPeerConnection();
+    // Créer l'instance de RTCPeerConnection avec un serveur STUN
+    const configuration = {
+        iceServers: [
+            { urls: 'stun:stun.l.google.com:19302' } // Serveur STUN public
+        ]
+    };
+    pcLocal = new RTCPeerConnection(configuration);
     console.log('Created local peer connection object');
 
     // Ajouter chaque piste du flux à RTCPeerConnection
@@ -60,15 +70,52 @@ function maybeCreateStream() {
             // Définir l'offre en tant que description locale
             await pcLocal.setLocalDescription(offer);
 
-            // Envoyer l'offre via Socket.IO
-            socket.emit('signal', { sdp: offer });
-            console.log('Offre SDP envoyée', offer);
+            // Utiliser un délai avant d'envoyer l'offre SDP
+            setTimeout(() => {
+                socket.emit('signal', { sdp: offer });
+                console.log('Offre SDP envoyée avec délai', offer);
+            }, SDP_SEND_DELAY); // Délai défini
+
+            // // Envoyer l'offre via Socket.IO
+            // socket.emit('signal', { sdp: offer });
+            // console.log('Offre SDP envoyée', offer);
         } catch (error) {
             console.error('Erreur lors de la création de l\'offre SDP', error);
         }
     };
 
 }
+
+
+
+
+// Gestion des signaux reçus
+socket.on('signal', async (data) => {
+    // Si une réponse SDP est reçue
+    if (data.sdp && data.sdp.type === 'answer') {
+        console.log('Réponse SDP reçue par local.js:', data.sdp);
+        try {
+            await pcLocal.setRemoteDescription(new RTCSessionDescription(data.sdp));
+            console.log('Remote description configurée dans local.js');
+        } catch (error) {
+            console.error('Erreur lors de la configuration de Remote Description:', error);
+        }
+    }
+    // Si un candidat ICE est reçu
+    else if (data.candidate) {
+        console.log('Candidat ICE reçu par local.js:', data.candidate);
+        try {
+            await pcLocal.addIceCandidate(new RTCIceCandidate(data.candidate));
+            console.log('Candidat ICE ajouté dans local.js');
+        } catch (error) {
+            console.error('Erreur lors de l\'ajout du candidat ICE:', error);
+        }
+    }
+});
+
+
+
+
 
 // Video tag capture must be set up after video tracks are enumerated.
 localVideo.oncanplay = maybeCreateStream;

@@ -1,0 +1,63 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebGL Teapot Demo</title>
+    <!-- Inclusion des scripts nécessaires -->
+    <script src="/webgl_teapot/webgl-utils.js"></script>
+    <script src="/webgl_teapot/webgl-debug.js"></script>
+    <script src="/webgl_teapot/matrix4x4.js"></script>
+    <script src="/webgl_teapot/cameracontroller.js"></script>
+    <script src="/webgl_teapot/teapot-streams.js"></script>
+    <script src="/webgl_teapot/demo.js"></script>
+
+    <style>
+        /* Style pour centrer le canvas */
+        body {
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #000;
+        }
+
+        canvas {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <!-- Canvas où la scène WebGL sera rendue -->
+    <canvas id="webgl-canvas" width="800" height="600"></canvas>
+
+    <script>
+        // Script principal pour initialiser la scène
+        (function() {
+            const canvas = document.getElementById('webgl-canvas');
+
+            if (!canvas) {
+                console.error('Canvas not found!');
+                return;
+            }
+
+            // Vérifie si WebGL est pris en charge
+            const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+            if (!gl) {
+                console.error('WebGL not supported!');
+                alert('Your browser does not support WebGL.');
+                return;
+            }
+
+            // Appel au script de la démo pour initialiser la scène Teapot
+            try {
+                main(canvas); // La fonction "main" est définie dans "demo.js"
+            } catch (error) {
+                console.error('An error occurred while running the WebGL demo:', error);
+            }
+        })();
+    </script>
+</body>
+</html>

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Video to peer connection</title>
+</head>
+<body>
+<div id="container">
+    <h1><span>Stream show remote video</span>
+    </h1>
+    <video id="remoteVideo" playsinline autoplay controls></video>
+</div>
+<script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+
+<!-- Teapot code -->
+<script src="/third_party/webgl_teapot/webgl-utils.js"></script>
+<script src="/third_party/webgl_teapot/webgl-debug.js"></script>
+<script src="/third_party/webgl_teapot/matrix4x4.js"></script>
+<script src="/third_party/webgl_teapot/cameracontroller.js"></script>
+<script src="/third_party/webgl_teapot/teapot-streams.js"></script>
+<script src="/third_party/webgl_teapot/demo.js"></script>
+
+<script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
+
+<script src="/static/remote.js" async></script>
+</body>
+</html>

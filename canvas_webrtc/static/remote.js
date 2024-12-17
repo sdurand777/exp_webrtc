@@ -2,20 +2,34 @@
 // Initialiser la connexion Socket.IO
 const socket = io();
 
-// Initialiser le peer connection
-const peerConnection = new RTCPeerConnection();
-console.log('Created remote peer connection object');
+// Créer l'instance de RTCPeerConnection avec un serveur STUN
+const configuration = {
+    iceServers: [
+        { urls: 'stun:stun.l.google.com:19302' } // Serveur STUN public
+    ]
+};
+const peerConnection = new RTCPeerConnection(configuration);
+console.log('Created remote peer connection object with STUN server');
+
 
 // Élément vidéo distant
 const remoteVideo = document.getElementById('remoteVideo');
+console.log('Get element video');
 
 // Lorsque le serveur envoie un signal (offre SDP ou candidat ICE)
 socket.on('signal', async (data) => {
+
+    console.log('Signal reçu par le client distant :', data);
+
     if (data.sdp) {
+
+        console.log('Offre SDP reçue :', data.sdp);
+
         // Si on reçoit une offre SDP
         if (data.sdp.type === 'offer') {
             // Définir l'offre reçue comme description distante
             await peerConnection.setRemoteDescription(new RTCSessionDescription(data.sdp));
+            console.log('Description distante définie avec succès');
 
             // Créer une réponse (answer)
             const answer = await peerConnection.createAnswer();
@@ -28,8 +42,14 @@ socket.on('signal', async (data) => {
             console.log('Réponse (answer) envoyée');
         }
     } else if (data.candidate) {
-        // Si on reçoit un candidat ICE, l'ajouter au peer connection
-        await peerConnection.addIceCandidate(new RTCIceCandidate(data.candidate));
+        console.log('Candidat ICE reçu :', data.candidate);
+        try {
+            await peerConnection.addIceCandidate(new RTCIceCandidate(data.candidate));
+        } catch (error) {
+            console.error('Erreur lors de l\'ajout du candidat ICE :', error);
+        }
+        // // Si on reçoit un candidat ICE, l'ajouter au peer connection
+        // await peerConnection.addIceCandidate(new RTCIceCandidate(data.candidate));
     }
 });
 
